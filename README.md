@@ -1,5 +1,10 @@
 # How to Write a Google Maps React Component
+
+Tutorial:
 [https://www.newline.co/fullstack-react/articles/how-to-write-a-google-maps-react-component/](https://www.newline.co/fullstack-react/articles/how-to-write-a-google-maps-react-component/)
+
+Git Repo:
+[https://github.com/fullstackreact/google-maps-react](https://github.com/fullstackreact/google-maps-react)
 
 This tutorial wasn't very specific in terms of project setup etc. So I used the following tutorial
 as a starting point:
