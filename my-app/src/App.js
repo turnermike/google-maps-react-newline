@@ -13,6 +13,15 @@ const mapStyles = {
 
 export class MapContainer extends React.Component {
 
+  static defaultProps = {
+    zoom: 13,
+    initialCenter: {
+      lat: 37.774929,
+      lng: -122.419416
+    }
+  }
+
+
   constructor(props) {
 
     super(props);
@@ -64,10 +73,16 @@ export class MapContainer extends React.Component {
       const mapDOMNode = ReactDOM.findDOMNode(mapRef);      // reference to actual DOM node, not the virtual DOM
       console.log('mapDOMNode', mapDOMNode);
 
-      let zoom = 14;
-      let lat = 37.774929;
-      let lng = -122.419416;
+      // let zoom = 14;
+      // let lat = 37.774929;
+      // let lng = -122.419416;
+      // const center = new maps.LatLng(lat, lng);
+
+      console.log('this.props', this.props);
+      let {initialCenter, zoom} = this.props;
+      const {lat, lng} = initialCenter;
       const center = new maps.LatLng(lat, lng);
+
       const mapConfig = Object.assign({}, {
         center: center,
         zoom: zoom
@@ -129,13 +144,13 @@ Map.propTypes = {
   initialCenter: PropTypes.object
 }
 
-Map.defaultProps = {
-  zoom: 13,
-  initialCenter: {
-    lat: 37.774929,
-    lng: -122.419416
-  }
-}
+// Map.defaultProps = {
+//   zoom: 13,
+//   initialCenter: {
+//     lat: 37.774929,
+//     lng: -122.419416
+//   }
+// }
 
 export default GoogleApiWrapper({
   apiKey: keys.googleAPIKey
