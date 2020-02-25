@@ -11,7 +11,6 @@ const mapStyles = {
   height: '100%'
 }
 
-// const evtNames = ['ready', 'click', 'dragend'];
 
 const camelize = function(str) {
 
@@ -21,19 +20,31 @@ const camelize = function(str) {
 
 }
 
+const evtNames = ['ready', 'click', 'dragend'];
+
+
+
 export class MapContainer extends React.Component {
+
+
+
+
 
   static defaultProps = {
 
-    zoom: 13,
+    zoom: 10,
     initialCenter: {
       lat: 37.774929,
       lng: -122.419416
     },
-    centerAroundCurrentLocation: false,
+    centerAroundCurrentLocation: true,
     onMove: function() {}
 
   }
+
+
+
+
 
   constructor(props) {
 
@@ -58,6 +69,10 @@ export class MapContainer extends React.Component {
 
   };
 
+
+
+
+
   componentDidUpdate(prevProps, prevState) {
 
     console.log('componentDidUpdate()');
@@ -71,6 +86,10 @@ export class MapContainer extends React.Component {
     }
 
   };
+
+
+
+
 
   componentDidMount() {
 
@@ -98,6 +117,10 @@ export class MapContainer extends React.Component {
 
   };
 
+
+
+
+
   loadMap() {
 
     console.log('loadMap()');
@@ -114,12 +137,6 @@ export class MapContainer extends React.Component {
       const mapDOMNode = ReactDOM.findDOMNode(mapRef);      // reference to actual DOM node, not the virtual DOM
       // console.log('mapDOMNode', mapDOMNode);
 
-      // let zoom = 14;
-      // let lat = 37.774929;
-      // let lng = -122.419416;
-      // const center = new maps.LatLng(lat, lng);
-
-      // console.log('this.props', this.props);
       let {initialCenter, zoom} = this.props;
       // const {lat, lng} = initialCenter;                     // set lat, lng using props
       const {lat, lng} = this.state.currentLocation;
@@ -130,89 +147,48 @@ export class MapContainer extends React.Component {
       })
       this.map = new maps.Map(mapDOMNode, mapConfig);
 
-      const evtNames = ['ready', 'click', 'dragend'];
+      // // basic event listener
+      // this.map.addListener('dragend', (evt) => {
 
-      // evtNames.forEach( e => Map.propTypes[camelize(e)] = T.func );
-      // evtNames.forEach( e => Map.propTypes[camelize(e)] );
-
-      evtNames.forEach( e => {
-
-        console.log('add listener', camelize(e));
-        this.map.addListener( e, this.handleEvent(e) );
-
-      });
-
-      // maps.event.trigger( this.map, 'ready' );
-
-
-      // evtNames.forEach( e => {
-
-      //   this.map.addListener(e, this.handleEvent(e));
-
+      //   this.props.onMove(this.map);
+      //   console.log('moved');
+        
       // });
 
-      // // map drag event listener
+      // // event listener with timeout to prevent multiple events
+      // let centerChangedTimeout;
       // this.map.addListener('dragend', (evt) => {
-      //   // this.props.onMove(this.map);
-
-      //   let centerChangedTimeout;
 
       //   if( centerChangedTimeout ) {
-
-      //     clearTimeout( centerChangedTimeout );
+      //     clearTimeout(centerChangedTimeout);
       //     centerChangedTimeout = null;
-
       //   }
 
-      //   centerChangedTimeout = setTimeout( () => {
-
-      //     console.log('centerChangedTimeout');
-
-      //     this.props.onMove( this.map );
-
+      //   centerChangedTimeout = setTimeout(() => {
+      //     this.props.onMove(this.map);
+      //     console.log('moved');
       //   }, 0);
-
+        
       // });
 
+      evtNames.forEach(e => {
+        // console.log('event - ', e);
+        this.map.addListener(e, this.handleEvent(e));
+      });
+
+      maps.event.trigger(this.map, 'ready');
 
 
-
-    }
-
-  };
-
-  handleEvent( evtName ) {
-
-    console.log('handleEvent()', evtName);
-
-    let timeout;
-    // const handlerName = evtName;
-    const handlerName  = `on${camelize(evtName)}`;
-    // console.log('handlerName', handlerName);
-
-    return (e) => {
-
-      if( timeout ) {
-        clearTimeout( timeout );
-        timeout = null;
-      }
-
-      timeout = setTimeout( () => {
-
-        // console.log('handlerName', this.props[handlerName]);
-
-        if( this.props[handlerName] ) {
-          this.props[handlerName](this.props, this.map, e);
-        }
-
-      }, 0);
-
-      // evtNames.forEach(e => Map.propTypes[camelize(e)] = T.func)
 
 
     }
 
   };
+
+
+
+
+
 
   recenterMap() {
 
@@ -230,6 +206,49 @@ export class MapContainer extends React.Component {
 
   };
 
+
+
+
+
+
+  handleEvent(evtName) {
+
+    // console.log('handleEvent()', evtName);
+
+    let timeout;
+    // const handlerName = evtName;
+    const handlerName  = `on${camelize(evtName)}`;
+    console.log('handlerName', handlerName);
+
+    return (e) => {
+
+      if( timeout ) {
+        clearTimeout( timeout );
+        timeout = null;
+      }
+
+      timeout = setTimeout(() => {
+        
+        console.log('handleEvent timeout: ', handlerName);
+
+        if( this.props[handlerName] ) {
+          
+          this.props[handlerName](this.props, this.map, e);
+        }
+
+      }, 0);
+
+
+
+    }
+
+  };
+
+
+
+
+
+
   displayMarkers = () => {
 
     return this.state.stores.map( (store, index) => {
@@ -244,6 +263,10 @@ export class MapContainer extends React.Component {
     });
 
   };
+
+
+
+
 
   render() {
 
@@ -281,6 +304,8 @@ Map.propTypes = {
   centerAroundCurrentLocation: PropTypes.bool,
   onMove: PropTypes.func
 }
+
+evtNames.forEach(e => (Map.propTypes[camelize(e)] = PropTypes.func));
 
 export default GoogleApiWrapper({
   apiKey: keys.googleAPIKey
