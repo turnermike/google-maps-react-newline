@@ -11,6 +11,7 @@ const mapStyles = {
   height: '100%'
 }
 
+// const evtNames = ['ready', 'click', 'dragend'];
 
 const camelize = function(str) {
 
@@ -20,31 +21,19 @@ const camelize = function(str) {
 
 }
 
-
-
-
-
 export class MapContainer extends React.Component {
-
-
-
-
 
   static defaultProps = {
 
-    zoom: 10,
+    zoom: 13,
     initialCenter: {
       lat: 37.774929,
       lng: -122.419416
     },
-    centerAroundCurrentLocation: true,
+    centerAroundCurrentLocation: false,
     onMove: function() {}
 
   }
-
-
-
-
 
   constructor(props) {
 
@@ -69,10 +58,6 @@ export class MapContainer extends React.Component {
 
   };
 
-
-
-
-
   componentDidUpdate(prevProps, prevState) {
 
     console.log('componentDidUpdate()');
@@ -86,10 +71,6 @@ export class MapContainer extends React.Component {
     }
 
   };
-
-
-
-
 
   componentDidMount() {
 
@@ -116,10 +97,6 @@ export class MapContainer extends React.Component {
     this.loadMap();
 
   };
-
-
-
-
 
   loadMap() {
 
@@ -153,7 +130,49 @@ export class MapContainer extends React.Component {
       })
       this.map = new maps.Map(mapDOMNode, mapConfig);
 
+      const evtNames = ['ready', 'click', 'dragend'];
 
+      // evtNames.forEach( e => Map.propTypes[camelize(e)] = T.func );
+      // evtNames.forEach( e => Map.propTypes[camelize(e)] );
+
+      evtNames.forEach( e => {
+
+        console.log('add listener', camelize(e));
+        this.map.addListener( e, this.handleEvent(e) );
+
+      });
+
+      // maps.event.trigger( this.map, 'ready' );
+
+
+      // evtNames.forEach( e => {
+
+      //   this.map.addListener(e, this.handleEvent(e));
+
+      // });
+
+      // // map drag event listener
+      // this.map.addListener('dragend', (evt) => {
+      //   // this.props.onMove(this.map);
+
+      //   let centerChangedTimeout;
+
+      //   if( centerChangedTimeout ) {
+
+      //     clearTimeout( centerChangedTimeout );
+      //     centerChangedTimeout = null;
+
+      //   }
+
+      //   centerChangedTimeout = setTimeout( () => {
+
+      //     console.log('centerChangedTimeout');
+
+      //     this.props.onMove( this.map );
+
+      //   }, 0);
+
+      // });
 
 
 
@@ -161,10 +180,6 @@ export class MapContainer extends React.Component {
     }
 
   };
-
-
-
-
 
   handleEvent( evtName ) {
 
@@ -199,10 +214,6 @@ export class MapContainer extends React.Component {
 
   };
 
-
-
-
-
   recenterMap() {
 
     const map = this.map;
@@ -219,10 +230,6 @@ export class MapContainer extends React.Component {
 
   };
 
-
-
-
-
   displayMarkers = () => {
 
     return this.state.stores.map( (store, index) => {
@@ -237,10 +244,6 @@ export class MapContainer extends React.Component {
     });
 
   };
-
-
-
-
 
   render() {
 
