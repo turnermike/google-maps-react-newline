@@ -20,7 +20,7 @@ const camelize = function(str) {
 
 }
 
-
+const evtNames = ['ready', 'click', 'dragend'];
 
 
 
@@ -137,12 +137,6 @@ export class MapContainer extends React.Component {
       const mapDOMNode = ReactDOM.findDOMNode(mapRef);      // reference to actual DOM node, not the virtual DOM
       // console.log('mapDOMNode', mapDOMNode);
 
-      // let zoom = 14;
-      // let lat = 37.774929;
-      // let lng = -122.419416;
-      // const center = new maps.LatLng(lat, lng);
-
-      // console.log('this.props', this.props);
       let {initialCenter, zoom} = this.props;
       // const {lat, lng} = initialCenter;                     // set lat, lng using props
       const {lat, lng} = this.state.currentLocation;
@@ -161,21 +155,28 @@ export class MapContainer extends React.Component {
         
       // });
 
-      // event listener with timeout to prevent multiple events
-      let centerChangedTimeout;
-      this.map.addListener('dragend', (evt) => {
+      // // event listener with timeout to prevent multiple events
+      // let centerChangedTimeout;
+      // this.map.addListener('dragend', (evt) => {
 
-        if( centerChangedTimeout ) {
-          clearTimeout(centerChangedTimeout);
-          centerChangedTimeout = null;
-        }
+      //   if( centerChangedTimeout ) {
+      //     clearTimeout(centerChangedTimeout);
+      //     centerChangedTimeout = null;
+      //   }
 
-        centerChangedTimeout = setTimeout(() => {
-          this.props.onMove(this.map);
-          console.log('moved');
-        }, 0);
+      //   centerChangedTimeout = setTimeout(() => {
+      //     this.props.onMove(this.map);
+      //     console.log('moved');
+      //   }, 0);
         
+      // });
+
+      evtNames.forEach(e => {
+        // console.log('event - ', e);
+        this.map.addListener(e, this.handleEvent(e));
       });
+
+      maps.event.trigger(this.map, 'ready');
 
 
 
@@ -210,14 +211,14 @@ export class MapContainer extends React.Component {
 
 
 
-  handleEvent( evtName ) {
+  handleEvent(evtName) {
 
-    console.log('handleEvent()', evtName);
+    // console.log('handleEvent()', evtName);
 
     let timeout;
     // const handlerName = evtName;
     const handlerName  = `on${camelize(evtName)}`;
-    // console.log('handlerName', handlerName);
+    console.log('handlerName', handlerName);
 
     return (e) => {
 
@@ -226,17 +227,17 @@ export class MapContainer extends React.Component {
         timeout = null;
       }
 
-      timeout = setTimeout( () => {
-
-        // console.log('handlerName', this.props[handlerName]);
-
+      timeout = setTimeout(() => {
+        
+        console.log('handleEvent timeout: ', handlerName);
+        
         if( this.props[handlerName] ) {
+          
           this.props[handlerName](this.props, this.map, e);
         }
 
       }, 0);
 
-      // evtNames.forEach(e => Map.propTypes[camelize(e)] = T.func)
 
 
     }
@@ -303,6 +304,8 @@ Map.propTypes = {
   centerAroundCurrentLocation: PropTypes.bool,
   onMove: PropTypes.func
 }
+
+evtNames.forEach(e => (Map.propTypes[camelize(e)] = PropTypes.func));
 
 export default GoogleApiWrapper({
   apiKey: keys.googleAPIKey
