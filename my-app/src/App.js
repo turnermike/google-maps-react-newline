@@ -230,7 +230,7 @@ export class MapContainer extends React.Component {
       timeout = setTimeout(() => {
         
         console.log('handleEvent timeout: ', handlerName);
-        
+
         if( this.props[handlerName] ) {
           
           this.props[handlerName](this.props, this.map, e);
