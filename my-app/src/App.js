@@ -153,7 +153,29 @@ export class MapContainer extends React.Component {
       })
       this.map = new maps.Map(mapDOMNode, mapConfig);
 
+      // // basic event listener
+      // this.map.addListener('dragend', (evt) => {
 
+      //   this.props.onMove(this.map);
+      //   console.log('moved');
+        
+      // });
+
+      // event listener with timeout to prevent multiple events
+      let centerChangedTimeout;
+      this.map.addListener('dragend', (evt) => {
+
+        if( centerChangedTimeout ) {
+          clearTimeout(centerChangedTimeout);
+          centerChangedTimeout = null;
+        }
+
+        centerChangedTimeout = setTimeout(() => {
+          this.props.onMove(this.map);
+          console.log('moved');
+        }, 0);
+        
+      });
 
 
 
@@ -161,6 +183,28 @@ export class MapContainer extends React.Component {
     }
 
   };
+
+
+
+
+
+
+  recenterMap() {
+
+    const map = this.map;
+    const curr = this.state.currentLocation;
+    const google = this.props.google;
+    const maps = google.maps;
+
+    if( map ) {
+
+      let center = new maps.LatLng( curr.lat, curr.lng );
+      map.panTo( center );
+
+    }
+
+  };
+
 
 
 
@@ -199,25 +243,6 @@ export class MapContainer extends React.Component {
 
   };
 
-
-
-
-
-  recenterMap() {
-
-    const map = this.map;
-    const curr = this.state.currentLocation;
-    const google = this.props.google;
-    const maps = google.maps;
-
-    if( map ) {
-
-      let center = new maps.LatLng( curr.lat, curr.lng );
-      map.panTo( center );
-
-    }
-
-  };
 
 
 
